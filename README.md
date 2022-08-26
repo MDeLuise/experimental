@@ -1,2 +1,2 @@
 # experimental
-🧪 Sample projects, exercises, tests, etc.
+This repository contains some of my tests, sample projects and code snippets.

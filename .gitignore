@@ -1,0 +1,14 @@
+# IDE
+**/.idea/
+**/.code/
+
+
+
+
+# SECRET
+**/client_secret.json
+
+
+
+# JAVA
+**.class
