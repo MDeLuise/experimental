@@ -30,6 +30,8 @@ public class ApplicationSecurityConfig {
             .authorizeRequests()
             .antMatchers("/", "index.html", "/css/*", "/js/*")
             .permitAll()
+            .antMatchers("/api/**")
+            .hasRole(ApplicationUserRole.STUDENT.name())
             .anyRequest()
             .authenticated()
             .and()
@@ -44,9 +46,15 @@ public class ApplicationSecurityConfig {
         UserDetails maxUserBuilder = User.builder()
             .username("max")
             .password(passwordEncoder.encode("max"))
-            .roles("student")
+            .roles(ApplicationUserRole.STUDENT.name())
             .build();
 
-        return new InMemoryUserDetailsManager(maxUserBuilder);
+        UserDetails rootUserBuilder = User.builder()
+            .username("root")
+            .password(passwordEncoder.encode("root"))
+            .roles(ApplicationUserRole.ADMIN.name())
+            .build();
+
+        return new InMemoryUserDetailsManager(maxUserBuilder, rootUserBuilder);
     }
 }
