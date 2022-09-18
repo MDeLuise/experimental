@@ -1,16 +1,14 @@
 package com.example.demo.security;
 
+import com.example.demo.auth.ApplicationUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -18,11 +16,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfig {
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationUserService applicationUserService;
 
 
     @Autowired
-    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder) {
+    public ApplicationSecurityConfig(PasswordEncoder passwordEncoder,
+                                     ApplicationUserService applicationUserService) {
         this.passwordEncoder = passwordEncoder;
+        this.applicationUserService = applicationUserService;
     }
 
 
@@ -45,26 +46,11 @@ public class ApplicationSecurityConfig {
 
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails maxUserBuilder = User.builder()
-            .username("max")
-            .password(passwordEncoder.encode("max"))
-            .authorities(ApplicationUserRole.STUDENT.grantedAuthorities())
-            .build();
-
-        UserDetails rootUserBuilder = User.builder()
-            .username("root")
-            .password(passwordEncoder.encode("root"))
-            .authorities(ApplicationUserRole.ADMIN.grantedAuthorities())
-            .build();
-
-        UserDetails rootTraineeUserBuilder = User.builder()
-            .username("rootTrainee")
-            .password(passwordEncoder.encode("rootTrainee"))
-            .authorities(ApplicationUserRole.ADMINTRAINEE.grantedAuthorities())
-            .build();
-
-        return new InMemoryUserDetailsManager(
-            maxUserBuilder, rootUserBuilder, rootTraineeUserBuilder);
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider =
+            new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+        daoAuthenticationProvider.setUserDetailsService(applicationUserService);
+        return daoAuthenticationProvider;
     }
 }
