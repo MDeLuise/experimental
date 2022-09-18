@@ -1,5 +1,6 @@
 package com.example.demo.student;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,24 +27,28 @@ public class StudentManagementController {
 
 
     @GetMapping
+    @PreAuthorize("hasAuthority('student_read')")
     public Collection<Student> getAll() {
         return students;
     }
 
 
     @PostMapping
+    @PreAuthorize("hasAuthority('student_write')")
     public void registerStudent(@RequestParam Student student) {
         System.out.println(student);
     }
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('student_write')")
     public void removeStudent(@PathVariable int id) {
         System.out.println(id);
     }
 
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('student_write')")
     public void update(@PathVariable int id, @RequestParam Student student) {
         System.out.printf("%s%s%n", id, student);
     }
